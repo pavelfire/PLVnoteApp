@@ -1,11 +1,8 @@
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
-
-    kotlin("kapt")
     id("com.google.dagger.hilt.android")
-
-//    id("com.google.devtools.ksp")
+    id("com.google.devtools.ksp")
 
 }
 
@@ -75,19 +72,25 @@ dependencies {
 
     implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
 
-    implementation("com.google.dagger:hilt-android:2.51.1")
-    kapt("com.google.dagger:hilt-android-compiler:2.51.1")
-    kapt("androidx.hilt:hilt-compiler:1.2.0")
+    implementation("com.google.dagger:hilt-android:2.48")
+//    ksp("com.google.dagger:hilt-android-compiler:2.51.1")
+//    ksp("androidx.hilt:hilt-compiler:1.2.0")
 
     // Room
     implementation ("androidx.room:room-runtime:2.6.1")
-    kapt ("androidx.room:room-compiler:2.6.1")
+//    ksp ("androidx.room:room-compiler:2.6.1")
 
     // Kotlin Extensions and Coroutines support for Room
     implementation ("androidx.room:room-ktx:2.6.1")
+
+
+//    ksp("com.google.dagger:dagger-compiler:2.51.1") // Dagger compiler
+    ksp("com.google.dagger:hilt-compiler:2.48")   // Hilt compiler
+//    ksp("androidx.room:room-compiler:2.6.1")
+    ksp("androidx.hilt:hilt-compiler:1.2.0")
 }
 
 // Allow references to generated code
-kapt {
-    correctErrorTypes = true
-}
+//kapt {
+//    correctErrorTypes = true
+//}
