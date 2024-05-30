@@ -1,4 +1,4 @@
-package com.vk.directop.plvnoteapp
+package com.vk.directop.plvnoteapp.featurenote.presentation
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
