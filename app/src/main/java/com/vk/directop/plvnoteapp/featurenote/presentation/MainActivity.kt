@@ -24,7 +24,6 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             PLVnoteAppTheme {
-                // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
@@ -37,9 +36,8 @@ class MainActivity : ComponentActivity() {
                         composable(route = Screen.NotesScreen.route) {
                             NotesScreen(navController = navController)
                         }
-
                         composable(
-                            route = Screen.NotesScreen.route +
+                            route = Screen.AddEditNoteScreen.route +
                                     "?noteId={noteId}&noteColor={noteColor}",
                             arguments = listOf(
                                 navArgument(
