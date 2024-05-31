@@ -7,6 +7,7 @@ import com.vk.directop.plvnoteapp.featurenote.data.repository.NoteRepositoryImpl
 import com.vk.directop.plvnoteapp.featurenote.domain.repository.NoteRepository
 import com.vk.directop.plvnoteapp.featurenote.domain.usecase.AddNote
 import com.vk.directop.plvnoteapp.featurenote.domain.usecase.DeleteNote
+import com.vk.directop.plvnoteapp.featurenote.domain.usecase.GetNote
 import com.vk.directop.plvnoteapp.featurenote.domain.usecase.GetNotes
 import com.vk.directop.plvnoteapp.featurenote.domain.usecase.NoteUseCases
 import dagger.Module
@@ -41,7 +42,8 @@ object AppModule {
         return NoteUseCases(
             getNotes = GetNotes(repository),
             deleteNote = DeleteNote(repository),
-            addNote = AddNote(repository)
+            addNote = AddNote(repository),
+            getNote = GetNote(repository)
         )
     }
 
