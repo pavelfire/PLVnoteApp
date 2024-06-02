@@ -21,6 +21,12 @@
       <entry key="app">
         <State />
       </entry>
+      <entry key="saveNewNote_editAfterwards()">
+        <State />
+      </entry>
+      <entry key="saveNewNotes_orderByTitleDescending()">
+        <State />
+      </entry>
     </value>
   </component>
 </project>
