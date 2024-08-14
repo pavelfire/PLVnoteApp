@@ -1,0 +1,23 @@
+#!/bin/sh
+
+max_size_mb=1
+max_size=$((max_size_mb * 1024 * 1024))
+
+large_files=$(git diff --cached --name-only | while read -r file; do
+    if [ -f "$file" ]; then
+        if [ "$(uname)" = "Darwin" ]; then
+            file_size=$(stat -f%z "$file")
+        else
+            file_size=$(stat -c%s "$file")
+        fi
+
+        if [ "$file_size" -gt "$max_size" ]; then
+            echo "$file"
+        fi
+    fi
+done)
+if [ -n "$large_files" ]; then
+    echo "Some files are too large (over ${max_size_mb}MB):" >&2
+    echo "$large_files" >&2
+    exit 1
+fi

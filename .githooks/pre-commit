@@ -1,0 +1,15 @@
+#!/bin/sh
+
+os=$(uname -s)
+
+
+if [ "$(expr substr $(uname -s) 1 5)" == "MINGW" ]; then
+    if command -v powershell >/dev/null; then
+        exec powershell -File .githooks/pre-commit-win.ps1 $1
+    else
+        echo "PowerShell not available."
+        exit 1
+    fi
+else
+    exec sh .githooks/pre-commit-mac $1
+fi
