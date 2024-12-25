@@ -1,0 +1,86 @@
+pipeline {
+    triggers {
+        cron('08 23 3,17 1-12 *') // Периодическое выполнение
+    }
+
+    agent any
+
+    options {
+        timeout(time: 320, unit: 'MINUTES')
+        timestamps() // Вывод времени для логов
+        disableConcurrentBuilds() // Запрет на параллельные запуски
+        skipDefaultCheckout(true) // Пропуск стандартного checkout
+        buildDiscarder(logRotator( numToKeepStr: '10', artifactNumToKeepStr: '2' ))
+    }
+
+    environment {
+        REPO_URL = 'https://github.com/christiandeange/ozone.git' // Замените на URL вашего репозитория
+        DAYS_THRESHOLD = 180 // Порог для определения неактивных веток
+    }
+
+    stages {
+        stage('Scan Repository for Inactive Branches') {
+            steps {
+                script {
+                    // Очистка рабочего пространства
+                    cleanWs()
+
+                    // Клонирование репозитория
+                    sh """
+                    git clone --mirror ${REPO_URL} repo.git
+                    """
+
+                    // Получение списка неактивных веток
+                    def inactiveBranches = sh(
+                            script: """
+                        cd repo.git &&
+                        git for-each-ref --sort=-committerdate refs/heads/ --format='%(refname:short) %(committerdate:unix)' |
+                        awk -v threshold=\$(date +%s --date="-${DAYS_THRESHOLD} days") '\$2 < threshold { print \$1 }'
+                        """,
+                            returnStdout: true
+                    ).trim()
+
+                    // Обработка результата
+                    if (inactiveBranches) {
+                        def branchesList = inactiveBranches.split('\n')
+                        echo "Found ${branchesList.size()} inactive branches (no commits for the last ${DAYS_THRESHOLD} days):"
+                        echo branchesList.join('\n')
+
+                        // Сохранение списка веток в файл для следующего этапа
+                        writeFile file: 'inactive_branches.txt', text: inactiveBranches
+                    } else {
+                        echo "No inactive branches found. Repository is clean!"
+                    }
+                }
+            }
+        }
+
+        stage('Delete Inactive Branches') {
+            when {
+                expression { fileExists('inactive_branches.txt') }
+            }
+            steps {
+                script {
+                    def branches = readFile('inactive_branches.txt').trim().split('\n')
+
+                    // Удаление каждой ветки
+                    branches.each { branch ->
+                        echo "Deleting branch: ${branch}"
+                        sh """
+                        cd repo.git &&
+                        git push origin --delete ${branch}
+                        """
+                    }
+
+                    echo "Deleted ${branches.size()} branches."
+                }
+            }
+        }
+    }
+
+    post {
+        always {
+            cleanWs() // Удаление временных файлов после выполнения пайплайна
+        }
+    }
+}
